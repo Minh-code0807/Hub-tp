@@ -1,8 +1,3 @@
--- Script: Tạo GUI kéo được, có tiêu đề "by Minh Hub" và 3 nút
--- Nút 1: Teleport nhân vật đến tọa độ -428.75, 26.07, -49040.91, tên nút là "Tp end"
--- Nút 2: Chạy code NPC Lock
--- Nút 3: Noclip (xuyên tường), nhấn nút để bật/tắt xuyên tường
-
 local player = game.Players.LocalPlayer
 local gui = Instance.new("ScreenGui")
 gui.Name = "MinhHubDraggableGui"
@@ -14,7 +9,7 @@ frame.Position = UDim2.new(0.5, -175, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(33, 35, 42)
 frame.BorderSizePixel = 0
 frame.Active = true
-frame.Draggable = true -- Cho phép kéo bảng
+frame.Draggable = true
 frame.Parent = gui
 
 local title = Instance.new("TextLabel")
@@ -27,7 +22,6 @@ title.TextSize = 28
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Parent = frame
 
--- Khung chứa các nút
 local buttonTable = Instance.new("Frame")
 buttonTable.Size = UDim2.new(1, -40, 0, 80)
 buttonTable.Position = UDim2.new(0, 20, 0, 60)
@@ -41,7 +35,6 @@ uiList.VerticalAlignment = Enum.VerticalAlignment.Center
 uiList.Padding = UDim.new(0, 20)
 uiList.Parent = buttonTable
 
--- Hàm tạo nút
 local function createButton(name, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, 80, 0, 40)
@@ -56,7 +49,6 @@ local function createButton(name, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- Nút 1: Teleport đến tọa độ mới
 createButton("Tp end", function()
     local char = player.Character or player.CharacterAdded:Wait()
     local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -70,12 +62,35 @@ createButton("Tp end", function()
     end
 end)
 
--- Nút 2: NPC Lock - Chạy code bạn cung cấp
+local oldMinZoom, oldMaxZoom = nil, nil
+local npcLockEnabled = false
+
 createButton("NPC Lock", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/huybuda1/Anh-Con-PHD-Troll/refs/heads/main/AnhCon_TheNao_LaiManh.lua"))()
+    npcLockEnabled = not npcLockEnabled
+    if npcLockEnabled then
+        oldMinZoom = player.CameraMinZoomDistance
+        oldMaxZoom = player.CameraMaxZoomDistance
+        player.CameraMinZoomDistance = 0.5
+        player.CameraMaxZoomDistance = 50
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/huybuda1/Anh-Con-PHD-Troll/refs/heads/main/AnhCon_TheNao_LaiManh.lua"))()
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "NPC Lock";
+            Text = "Đã bật NPC Lock và tự do zoom camera!";
+            Duration = 2;
+        })
+    else
+        if oldMinZoom and oldMaxZoom then
+            player.CameraMinZoomDistance = oldMinZoom
+            player.CameraMaxZoomDistance = oldMaxZoom
+        end
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "NPC Lock";
+            Text = "Đã tắt NPC Lock và trả về zoom mặc định!";
+            Duration = 2;
+        })
+    end
 end)
 
--- Nút 3: Noclip (xuyên tường)
 local noclipEnabled = false
 local noclipConnection = nil
 
@@ -103,7 +118,6 @@ createButton("noclip", function()
             noclipConnection:Disconnect()
             noclipConnection = nil
         end
-        -- Khôi phục lại CanCollide cho nhân vật
         local char = player.Character
         if char then
             for _, part in pairs(char:GetDescendants()) do
