@@ -116,12 +116,12 @@ local function createButton(name, callback)
 	btn.MouseButton1Click:Connect(callback)
 end
 
--- Nút Tp end - tọa độ mới
+-- Nút Tp end - tọa độ mới (Y = 25)
 createButton("Tp end", function()
 	local char = player.Character or player.CharacterAdded:Wait()
 	local hrp = char:FindFirstChild("HumanoidRootPart")
 	if hrp then
-		hrp.CFrame = CFrame.new(-428.75, 26.07, -49040.91)
+		hrp.CFrame = CFrame.new(-428.75, 25, -49040.91)
 		game.StarterGui:SetCore("SendNotification", {
 			Title = "Thông báo";
 			Text = "Đã dịch chuyển!";
