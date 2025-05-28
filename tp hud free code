@@ -116,12 +116,12 @@ local function createButton(name, callback)
 	btn.MouseButton1Click:Connect(callback)
 end
 
--- Sửa lại nút đầu tiên Tp end tới toạ độ mới
+-- Nút Tp end - cập nhật tọa độ mới
 createButton("Tp end", function()
 	local char = player.Character or player.CharacterAdded:Wait()
 	local hrp = char:FindFirstChild("HumanoidRootPart")
 	if hrp then
-		hrp.CFrame = CFrame.new(-349.58, 3.00, -49040.15)
+		hrp.CFrame = CFrame.new(-428.75, 26.07, 49040.91)
 		game.StarterGui:SetCore("SendNotification", {
 			Title = "Thông báo";
 			Text = "Đã dịch chuyển!";
@@ -202,14 +202,14 @@ createButton("noclip", function()
 	end
 end)
 
--- Auto teleport if Y < 2.9
+-- Auto teleport if Y < 3.5 (teleport to Y = 5)
 spawn(function()
 	while true do
 		local char = player.Character
 		if char then
 			local hrp = char:FindFirstChild("HumanoidRootPart")
-			if hrp and hrp.Position.Y < 2.9 then
-				hrp.CFrame = CFrame.new(hrp.Position.X, 4, hrp.Position.Z)
+			if hrp and hrp.Position.Y < 3.5 then
+				hrp.CFrame = CFrame.new(hrp.Position.X, 5, hrp.Position.Z)
 			end
 		end
 		wait(0.15)
