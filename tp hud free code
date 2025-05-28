@@ -1,0 +1,121 @@
+-- Script: Tạo GUI kéo được, có tiêu đề "by Minh Hub" và 3 nút
+-- Nút 1: Teleport nhân vật đến tọa độ -428.75, 26.07, -49040.91, tên nút là "Tp end"
+-- Nút 2: Chạy code NPC Lock
+-- Nút 3: Noclip (xuyên tường), nhấn nút để bật/tắt xuyên tường
+
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "MinhHubDraggableGui"
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 350, 0, 180)
+frame.Position = UDim2.new(0.5, -175, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(33, 35, 42)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true -- Cho phép kéo bảng
+frame.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.Text = "by Minh Hub"
+title.TextSize = 28
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Parent = frame
+
+-- Khung chứa các nút
+local buttonTable = Instance.new("Frame")
+buttonTable.Size = UDim2.new(1, -40, 0, 80)
+buttonTable.Position = UDim2.new(0, 20, 0, 60)
+buttonTable.BackgroundTransparency = 1
+buttonTable.Parent = frame
+
+local uiList = Instance.new("UIListLayout")
+uiList.FillDirection = Enum.FillDirection.Horizontal
+uiList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+uiList.VerticalAlignment = Enum.VerticalAlignment.Center
+uiList.Padding = UDim.new(0, 20)
+uiList.Parent = buttonTable
+
+-- Hàm tạo nút
+local function createButton(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 80, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(114, 137, 218)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255,255,255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 20
+    btn.BorderSizePixel = 0
+    btn.AutoButtonColor = true
+    btn.Parent = buttonTable
+    btn.MouseButton1Click:Connect(callback)
+end
+
+-- Nút 1: Teleport đến tọa độ mới
+createButton("Tp end", function()
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        hrp.CFrame = CFrame.new(-428.75, 26.07, -49040.91)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Thông báo";
+            Text = "Đã dịch chuyển!";
+            Duration = 2;
+        })
+    end
+end)
+
+-- Nút 2: NPC Lock - Chạy code bạn cung cấp
+createButton("NPC Lock", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/huybuda1/Anh-Con-PHD-Troll/refs/heads/main/AnhCon_TheNao_LaiManh.lua"))()
+end)
+
+-- Nút 3: Noclip (xuyên tường)
+local noclipEnabled = false
+local noclipConnection = nil
+
+createButton("noclip", function()
+    noclipEnabled = not noclipEnabled
+    local function Noclip()
+        local char = player.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide == true then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+    if noclipEnabled then
+        noclipConnection = game:GetService("RunService").Stepped:Connect(Noclip)
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "noclip";
+            Text = "Đã bật xuyên tường!";
+            Duration = 2;
+        })
+    else
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        -- Khôi phục lại CanCollide cho nhân vật
+        local char = player.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "noclip";
+            Text = "Đã tắt xuyên tường!";
+            Duration = 2;
+        })
+    end
+end)
