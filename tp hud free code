@@ -200,3 +200,17 @@ createButton("noclip", function()
 		})
 	end
 end)
+
+-- Auto teleport if Y < 2.9
+spawn(function()
+	while true do
+		local char = player.Character
+		if char then
+			local hrp = char:FindFirstChild("HumanoidRootPart")
+			if hrp and hrp.Position.Y < 2.9 then
+				hrp.CFrame = CFrame.new(hrp.Position.X, 4, hrp.Position.Z)
+			end
+		end
+		wait(0.15)
+	end
+end)
